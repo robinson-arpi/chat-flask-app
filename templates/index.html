@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat App</title>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.1/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var socket = io.connect();
+
+            socket.on('connect', function() {
+                $('#status').text('Connected');
+            });
+
+            socket.on('disconnect', function() {
+                $('#status').text('Disconnected');
+            });
+
+            socket.on('new_message', function(data) {
+                $('#messages').append('<p>Queue: ' + data.queue + ', Message: ' + data.message + '</p>');
+            });
+
+            $('#consume').click(function() {
+                var queue = $('#id').val();
+                socket.emit('consume', {sender: queue});
+            });
+
+            $('#send').click(function() {
+                var message = $('#message').val();
+                var queue = $('#id').val();
+                socket.emit('send_message', {message: message, queue: queue});
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Chat App</h1>
+
+    <h2>Status: <span id="status"></span></h2>
+
+    <h2>Connect</h2>
+    <!--Nombre de algunas de las colas-->
+    <input type="text" id="id" placeholder="Enter your ID">
+    <button id="consume">Connect</button>
+
+    <h2>Send Message</h2>
+    <input type="text" id="message" placeholder="Enter your message">
+    <button id="send">Send</button>
+
+    <h2>Messages</h2>
+    <div id="messages"></div>
+</body>
+</html>
